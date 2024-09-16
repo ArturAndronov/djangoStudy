@@ -2,9 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Main page</title>
+    <title>{{ main_title|default:"Without title" }}</title>
 </head>
 <body>
-    <h1>Main page</h1>
+    <p>{{ menu|join:" | " }}</p>
+    <p>{{ float|divisibleby:"2" }}</p>
+    <p>{{ lst|length }}</p>
+    <p>{{ set }}</p>
+    <p>{{ dict.key_1 }}</p>
+    <p>{{ obj.a }}</p>
+    <p>{{url}}</p>
+    <h1>{{ title|cut:" "|cut:"?" }}</h1>
 </body>
 </html>
