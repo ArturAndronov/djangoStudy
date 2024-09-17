@@ -5,13 +5,31 @@
     <title>{{ main_title|default:"Without title" }}</title>
 </head>
 <body>
-    <p>{{ menu|join:" | " }}</p>
-    <p>{{ float|divisibleby:"2" }}</p>
-    <p>{{ lst|length }}</p>
-    <p>{{ set }}</p>
-    <p>{{ dict.key_1 }}</p>
-    <p>{{ obj.a }}</p>
-    <p>{{url}}</p>
-    <h1>{{ title|cut:" "|cut:"?" }}</h1>
+    <ul>
+        <li>
+            <a href="{% url 'home' %}">Main page</a>
+            {% for m in menu %}
+                {% if not forloop.last %}<li>{% else %}<li class="last">{% endif %}
+                    <a href="{% url m.url_name %}">{{ m.title }}</a>
+                </li>
+            {%endfor%}
+        </li>
+    </ul>
+    <h1>{{ title }}</h1>
+
+    <ul>
+        {% for p in posts %}
+        {% if p.is_published %}
+            <li>
+                <h2>{{ p.title }}</h2>
+                <p>{{ p.content }}</p>
+                <p><a href="{% url 'post' p.id %}">Read post</a></p>
+                {% if not forloop.last %}
+                <hr>
+                {% endif %}
+            </li>
+        {%endif%}
+        {%endfor%}
+    </ul>
 </body>
 </html>
