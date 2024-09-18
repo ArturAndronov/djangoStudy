@@ -31,7 +31,7 @@ def index(request):
     return render(request, "women/index.html", context = data)
 
 def about(request):
-    return render(request, "women/about.html", {'title': 'About page'})
+    return render(request, "women/about.html", {'title': 'About page', 'menu': menu})
 
 def categories(request, cat_id):
     return HttpResponse(f"<h1>Categories</h1><p>id: {cat_id}</p>")
