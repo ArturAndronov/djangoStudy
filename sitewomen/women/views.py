@@ -33,7 +33,7 @@ class MyClass:
         self.b = b
 
 def index(request):
-    posts = Women.objects.filter(is_published=1)
+    posts = Women.published.all()
     data = {
         'title': 'Main page',
         'menu': menu,
