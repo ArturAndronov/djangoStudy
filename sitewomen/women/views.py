@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from pip._vendor.rich.markup import Tag
 
+from women.forms import AddPostForm
 from women.models import Women, Category, TagPost
 
 menu = [
@@ -49,7 +50,24 @@ def show_post(request, post_slug):
     return render(request, "women/post.html", data)
 
 def addpage(request):
-    return render(request, "women/addpage.html", {'menu': menu, 'title': 'Добавление статьи'})
+   if request.method == "POST":
+       form = AddPostForm(request.POST)
+       if form.is_valid():
+           #print(form.cleaned_data)
+            try:
+                Women.objects.create(**form.cleaned_data)
+                return redirect("home")
+            except:
+                form.add_error(None, 'Ошибка добавления поста')
+   else:
+       form = AddPostForm()
+
+   data = {
+       'menu': menu,
+       'title': 'Добавление статьи',
+       'form': form
+   }
+   return render(request, "women/addpage.html", data)
 def contact(request):
     return HttpResponse("Feedback")
 def login(request):
