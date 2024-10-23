@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, DetailView
 from pip._vendor.rich.markup import Tag
 
 from women.forms import AddPostForm, UploadFileForm
@@ -90,6 +90,22 @@ def show_post(request, post_slug):
 
     return render(request, "women/post.html", data)
 
+class ShowPost(DetailView):
+    #model = Women
+    template_name = 'women/post.html'
+    slug_url_kwarg = 'post_slug'
+    context_object_name = 'post'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = context['post'].title
+        context['menu'] = menu
+        return context
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
+
+
 # def addpage(request):
 #    if request.method == "POST":
 #        form = AddPostForm(request.POST, request.FILES)
@@ -170,15 +186,31 @@ class WomenCategory(ListView):
 def page_not_found(request, exception):
     return HttpResponseNotFound("Page not found")
 
-def show_tag_postlist(request, tag_slug):
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related('cat')
+# def show_tag_postlist(request, tag_slug):
+#     tag = get_object_or_404(TagPost, slug=tag_slug)
+#     posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related('cat')
+#
+#     data = {
+#         'title': f"Tag: {tag.tag}",
+#         'menu': menu,
+#         'posts': posts,
+#         'cat_selected': None,
+#     }
+#
+#     return render(request, "women/index.html", context=data)
 
-    data = {
-        'title': f"Tag: {tag.tag}",
-        'menu': menu,
-        'posts': posts,
-        'cat_selected': None,
-    }
+class TagPostList(ListView):
+    template_name = 'women/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
 
-    return render(request, "women/index.html", context=data)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag = TagPost.objects.get(slug=self.kwargs['tag_slug'])
+        context['title'] = 'Тег: ' + tag.tag
+        context['menu'] = menu
+        context['cat_selected'] = None
+        return context
+
+    def get_queryset(self):
+        return Women.published.filter(tags__slug=self.kwargs['tag_slug']).select_related('cat')
