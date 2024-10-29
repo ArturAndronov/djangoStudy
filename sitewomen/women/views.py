@@ -15,7 +15,7 @@ from women.utils import DataMixin
 
 class WomenHome(DataMixin, ListView):
     template_name = 'women/index.html'
-    content_object_name = 'posts'
+    context_object_name = 'posts'
     title_page = 'Main page'
     cat_selected = 0
 
